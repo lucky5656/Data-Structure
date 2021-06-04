@@ -1,33 +1,33 @@
 #include<iostream>
 using namespace std;
 
-/* Í¼µÄÁÚ½Ó¾ØÕó±íÊ¾·¨ */
+/* é‚»æ¥çŸ©é˜µå­˜å‚¨çš„å›¾ - BFS */
 
-#define MaxVertexNum 100    // ×î´ó¶¥µãÊıÉèÎª100
-#define INFINITY 65535     // ¡ŞÉèÎªË«×Ö½ÚÎŞ·ûºÅÕûÊıµÄ×î´óÖµ65535  
+#define MaxVertexNum 100    // æœ€å¤§é¡¶ç‚¹æ•°è®¾ä¸º100
+#define INFINITY 65535     // âˆè®¾ä¸ºåŒå­—èŠ‚æ— ç¬¦å·æ•´æ•°çš„æœ€å¤§å€¼65535  
 #define ERROR 0  
-typedef int Vertex;         // ÓÃ¶¥µãÏÂ±ê±íÊ¾¶¥µã,ÎªÕûĞÍ
-typedef int WeightType;        // ±ßµÄÈ¨ÖµÉèÎªÕûĞÍ
-typedef char DataType;        // ¶¥µã´æ´¢µÄÊı¾İÀàĞÍÉèÎª×Ö·ûĞÍ
+typedef int Vertex;         // ç”¨é¡¶ç‚¹ä¸‹æ ‡è¡¨ç¤ºé¡¶ç‚¹,ä¸ºæ•´å‹
+typedef int WeightType;        // è¾¹çš„æƒå€¼è®¾ä¸ºæ•´å‹
+typedef char DataType;        // é¡¶ç‚¹å­˜å‚¨çš„æ•°æ®ç±»å‹è®¾ä¸ºå­—ç¬¦å‹
 bool Visited[MaxVertexNum];
 
-// ±ßµÄ¶¨Òå
+// è¾¹çš„å®šä¹‰
 typedef struct ENode *PtrToENode;
 struct ENode {
-	Vertex V1, V2;    // ÓĞÏò±ß<V1,V2> 
-	WeightType Weight;  // È¨ÖØ 
+	Vertex V1, V2;    // æœ‰å‘è¾¹<V1,V2> 
+	WeightType Weight;  // æƒé‡ 
 };
 typedef PtrToENode Edge;
 
-// Í¼½áµãµÄ¶¨Òå
+// å›¾ç»“ç‚¹çš„å®šä¹‰
 typedef struct GNode *PtrToGNode;
 struct GNode {
-	int Nv;   // ¶¥µãÊı 
-	int Ne;   // ±ßÊı
-	WeightType G[MaxVertexNum][MaxVertexNum];  //ÁÚ½Ó¾ØÕó
-	DataType Data[MaxVertexNum]; // ´æ¶¥µãµÄÊı¾İ(×¢Òâ£ººÜ¶àÇé¿öÏÂ£¬¶¥µãÎŞÊı¾İ£¬´ËÊ±Data[]¿ÉÒÔ²»ÓÃ³öÏÖ)
+	int Nv;   // é¡¶ç‚¹æ•° 
+	int Ne;   // è¾¹æ•°
+	WeightType G[MaxVertexNum][MaxVertexNum];  //é‚»æ¥çŸ©é˜µ
+	DataType Data[MaxVertexNum]; // å­˜é¡¶ç‚¹çš„æ•°æ®(æ³¨æ„ï¼šå¾ˆå¤šæƒ…å†µä¸‹ï¼Œé¡¶ç‚¹æ— æ•°æ®ï¼Œæ­¤æ—¶Data[]å¯ä»¥ä¸ç”¨å‡ºç°)
 };
-typedef PtrToGNode MGraph;  // ÒÔÁÚ½Ó¾ØÕó´æ´¢µÄÍ¼ÀàĞÍ
+typedef PtrToGNode MGraph;  // ä»¥é‚»æ¥çŸ©é˜µå­˜å‚¨çš„å›¾ç±»å‹
 
 struct Node {
 	int Data;
@@ -40,34 +40,34 @@ struct QNode {
 };
 typedef struct QNode *Queue;
 
-// ³õÊ¼»¯Í¼ 
+// åˆå§‹åŒ–å›¾ 
 MGraph CreateGraph(int VertexNum)
 {
 	Vertex V, W;
 	MGraph Graph;
 
-	Graph = (MGraph)malloc(sizeof(struct GNode));  // ½¨Á¢Í¼
+	Graph = (MGraph)malloc(sizeof(struct GNode));  // å»ºç«‹å›¾
 	Graph->Nv = VertexNum;
 	Graph->Ne = 0;
-	/* ³õÊ¼»¯ÁÚ½Ó¾ØÕó */
-	/* ×¢Òâ£ºÕâÀïÄ¬ÈÏ¶¥µã±àºÅ´Ó0¿ªÊ¼£¬µ½(Graph->Nv - 1) */
+	/* åˆå§‹åŒ–é‚»æ¥çŸ©é˜µ */
+	/* æ³¨æ„ï¼šè¿™é‡Œé»˜è®¤é¡¶ç‚¹ç¼–å·ä»0å¼€å§‹ï¼Œåˆ°(Graph->Nv - 1) */
 	for (V = 0; V < VertexNum; V++)
 		for (W = 0; W < VertexNum; W++)
 			Graph->G[V][W] = 0;
 	return Graph;
 }
 
-// ²åÈë±ß 
+// æ’å…¥è¾¹ 
 void InsertEdge(MGraph Graph, Edge E)
 {
-	// ²åÈë±ß <V1,V2>
+	// æ’å…¥è¾¹ <V1,V2>
 	Graph->G[E->V1][E->V2] = E->Weight;
 
-	// Èç¹ûÊÇÎŞÏòÍ¼£¬»¹ĞèÒª²åÈë±ß <V2,V1>
+	// å¦‚æœæ˜¯æ— å‘å›¾ï¼Œè¿˜éœ€è¦æ’å…¥è¾¹ <V2,V1>
 	Graph->G[E->V2][E->V1] = E->Weight;
 }
 
-// ½¨Í¼ 
+// å»ºå›¾ 
 MGraph BuildGraph()
 {
 	MGraph Graph;
@@ -75,21 +75,21 @@ MGraph BuildGraph()
 	Vertex V;
 	int Nv, i;
 
-	cin >> Nv;   // ¶ÁÈë¶¥µãÊı 
-	Graph = CreateGraph(Nv);  // ³õÊ¼»¯ÓĞNv¸ö¶¥µãµ«Ã»ÓĞ±ßµÄÍ¼
+	cin >> Nv;   // è¯»å…¥é¡¶ç‚¹æ•° 
+	Graph = CreateGraph(Nv);  // åˆå§‹åŒ–æœ‰Nvä¸ªé¡¶ç‚¹ä½†æ²¡æœ‰è¾¹çš„å›¾
 
-	cin >> (Graph->Ne);  // ¶ÁÈë±ßÊı 
-	if (Graph->Ne != 0)  // Èç¹ûÓĞ±ß
+	cin >> (Graph->Ne);  // è¯»å…¥è¾¹æ•° 
+	if (Graph->Ne != 0)  // å¦‚æœæœ‰è¾¹
 	{
-		E = (Edge)malloc(sizeof(struct ENode));  // ½¨Á¢±ß½áµã
+		E = (Edge)malloc(sizeof(struct ENode));  // å»ºç«‹è¾¹ç»“ç‚¹
 		for (i = 0; i < Graph->Ne; i++)
 		{
-			cin >> E->V1 >> E->V2 >> E->Weight;// ¶ÁÈë±ß£¬¸ñÊ½Îª"Æğµã ÖÕµã È¨ÖØ"£¬²åÈëÁÚ½Ó¾ØÕó 
+			cin >> E->V1 >> E->V2 >> E->Weight;// è¯»å…¥è¾¹ï¼Œæ ¼å¼ä¸º"èµ·ç‚¹ ç»ˆç‚¹ æƒé‡"ï¼Œæ’å…¥é‚»æ¥çŸ©é˜µ 
 			InsertEdge(Graph, E);
 		}
 	}
 
-	// Èç¹û¶¥µãÓĞÊı¾İµÄ»°£¬¶ÁÈëÊı¾İ
+	// å¦‚æœé¡¶ç‚¹æœ‰æ•°æ®çš„è¯ï¼Œè¯»å…¥æ•°æ®
 	for (V = 0; V < Graph->Nv; V++)
 		cin >> (Graph->Data[V]);
 
@@ -123,7 +123,7 @@ int DeleteQ(Queue PtrQ)
 
 	if (IsEmpty(PtrQ)) 
 	{
-		cout << "¶ÓÁĞ¿Õ" << endl;
+		cout << "é˜Ÿåˆ—ç©º" << endl;
 		return ERROR;
 	}
 	FrontCell = PtrQ->front;
@@ -155,42 +155,42 @@ void InsertQ(int item, Queue PtrQ)
 	}
 };
 
-/* IsEdge(Graph, V, W)¼ì²é<V, W>ÊÇ·ñÍ¼GraphÖĞµÄÒ»Ìõ±ß£¬¼´WÊÇ·ñVµÄÁÚ½Óµã¡£  */
-/* ´Ëº¯Êı¸ù¾İÍ¼µÄ²»Í¬ÀàĞÍÒª×ö²»Í¬µÄÊµÏÖ£¬¹Ø¼üÈ¡¾öÓÚ¶Ô²»´æÔÚµÄ±ßµÄ±íÊ¾·½·¨¡£*/
-/* ÀıÈç¶ÔÓĞÈ¨Í¼, Èç¹û²»´æÔÚµÄ±ß±»³õÊ¼»¯ÎªINFINITY, Ôòº¯ÊıÊµÏÖÈçÏÂ:         */
+/* IsEdge(Graph, V, W)æ£€æŸ¥<V, W>æ˜¯å¦å›¾Graphä¸­çš„ä¸€æ¡è¾¹ï¼Œå³Wæ˜¯å¦Vçš„é‚»æ¥ç‚¹ã€‚  */
+/* æ­¤å‡½æ•°æ ¹æ®å›¾çš„ä¸åŒç±»å‹è¦åšä¸åŒçš„å®ç°ï¼Œå…³é”®å–å†³äºå¯¹ä¸å­˜åœ¨çš„è¾¹çš„è¡¨ç¤ºæ–¹æ³•ã€‚*/
+/* ä¾‹å¦‚å¯¹æœ‰æƒå›¾, å¦‚æœä¸å­˜åœ¨çš„è¾¹è¢«åˆå§‹åŒ–ä¸ºINFINITY, åˆ™å‡½æ•°å®ç°å¦‚ä¸‹:         */
 bool IsEdge(MGraph Graph, Vertex V, Vertex W)
 {
 	return Graph->G[V][W] < INFINITY ? true : false;
 }
 
-// ÒÔSÎª³ö·¢µã¶ÔÁÚ½Ó¾ØÕó´æ´¢µÄÍ¼Graph½øĞĞBFSËÑ
+// ä»¥Sä¸ºå‡ºå‘ç‚¹å¯¹é‚»æ¥çŸ©é˜µå­˜å‚¨çš„å›¾Graphè¿›è¡ŒBFSæœ
 void BFS(MGraph Graph, Vertex S, void(*Visit)(Vertex))
 {
 	Queue Q;
 	Vertex V, W;
 
-	Q = CreateQueue();  // ´´½¨¿Õ¶ÓÁĞ
+	Q = CreateQueue();  // åˆ›å»ºç©ºé˜Ÿåˆ—
 	Visit(S);
-	Visited[S] = true;  // ±ê¼ÇSÒÑ·ÃÎÊ£¬Visited[]ÎªÈ«¾Ö±äÁ¿£¬ÒÑ¾­³õÊ¼»¯Îªfalse
-	InsertQ(S, Q);  // SÈë¶ÓÁĞ
+	Visited[S] = true;  // æ ‡è®°Så·²è®¿é—®ï¼ŒVisited[]ä¸ºå…¨å±€å˜é‡ï¼Œå·²ç»åˆå§‹åŒ–ä¸ºfalse
+	InsertQ(S, Q);  // Så…¥é˜Ÿåˆ—
 
 	while (!IsEmpty(Q)) 
 	{
-		V = DeleteQ(Q);   // µ¯³öV
-		for (W = 0; W < Graph->Nv; W++)  // ¶ÔÍ¼ÖĞµÄÃ¿¸ö¶¥µãW
-			// ÈôWÊÇVµÄÁÚ½Óµã²¢ÇÒÎ´·ÃÎÊ¹ı
+		V = DeleteQ(Q);   // å¼¹å‡ºV
+		for (W = 0; W < Graph->Nv; W++)  // å¯¹å›¾ä¸­çš„æ¯ä¸ªé¡¶ç‚¹W
+			// è‹¥Wæ˜¯Vçš„é‚»æ¥ç‚¹å¹¶ä¸”æœªè®¿é—®è¿‡
 			if (!Visited[W] && IsEdge(Graph, V, W)) 
 			{
-				Visit(W);  // ·ÃÎÊ¶¥µã
-				Visited[W] = true;  // ±ê¼ÇWÒÑ·ÃÎÊ
-				InsertQ(W, Q);  // WÈë¶ÓÁĞ
+				Visit(W);  // è®¿é—®é¡¶ç‚¹
+				Visited[W] = true;  // æ ‡è®°Wå·²è®¿é—®
+				InsertQ(W, Q);  // Wå…¥é˜Ÿåˆ—
 			}
-	} /* while½áÊø*/
+	} /* whileç»“æŸ*/
 }
 
 void Visit(Vertex V)
 {
-	cout << "ÕıÔÚ·ÃÎÊ¶¥µã" << V << endl;
+	cout << "æ­£åœ¨è®¿é—®é¡¶ç‚¹" << V << endl;
 }
 
 int main() 
