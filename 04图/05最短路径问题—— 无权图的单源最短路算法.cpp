@@ -1,6 +1,8 @@
 #include<iostream>
 using namespace std;
 
+/* 邻接矩阵储存——无权图的单源最短路算法 */
+
 #define INFINITY 65535   // ∞设为双字节无符号整数的最大值65535      
 #define MaxVertexNum 100   //最大顶点数设为100     
 typedef int Vertex;   //用顶点下标表示顶点,为整型
