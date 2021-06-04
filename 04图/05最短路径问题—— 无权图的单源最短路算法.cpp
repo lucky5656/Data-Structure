@@ -53,7 +53,7 @@ MGraph CreateGraph(int VertexNum)
 	Graph->Ne = 0;
 	/* 初始化邻接矩阵 */
 	/* 注意：这里默认顶点编号从0开始，到(Graph->Nv - 1) */
-	for (V = 0; V < Graph->Nv; V++)
+	for (V = 0; V <= Graph->Nv; V++)
 		for (W = 0; W <= Graph->Nv; W++)
 			Graph->G[V][W] = INFINITY;
 
