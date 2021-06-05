@@ -2,54 +2,54 @@
 using namespace std;
 #include<queue> 
 #define MaxVertex 105
-struct Node {  // ´æöùÓãĞÅÏ¢
-	int hor;   // ºá×ø±ê 
-	int ver;  // ×İ×ø±ê
-	bool visit;  // ÊÇ·ñ±»·ÃÎÊ
-	bool safe;  // ÊÇ·ñÄÜÉÏ°¶ 
-	bool jump;  // µÚÒ»²½ÄÜ·ñÌøÉÏÈ¥ 
+struct Node {  // å­˜é³„é±¼ä¿¡æ¯
+	int hor;   // æ¨ªåæ ‡ 
+	int ver;  // çºµåæ ‡
+	bool visit;  // æ˜¯å¦è¢«è®¿é—®
+	bool safe;  // æ˜¯å¦èƒ½ä¸Šå²¸ 
+	bool jump;  // ç¬¬ä¸€æ­¥èƒ½å¦è·³ä¸Šå» 
 };
-int N;   // öùÓãÊı 
-int D;   // ÌøÔ¾¾àÀë
-bool isSafe;  // ÊÇ·ñÉÏ°¶ 
+int N;   // é³„é±¼æ•° 
+int D;   // è·³è·ƒè·ç¦»
+bool isSafe;  // æ˜¯å¦ä¸Šå²¸ 
 Node G[MaxVertex];
-const double diameter = 15;  // Ö±¾¶
+const double diameter = 15;  // ç›´å¾„
 
-// ¼ÆËãÁ½µã¾àÀë 
+// è®¡ç®—ä¸¤ç‚¹è·ç¦» 
 double getLen(int x1, int y1, int x2, int y2) 
 {
 	return sqrt(pow(x1 - x2, 2.0) + pow(y1 - y2, 2.0));
 }
 
-// ¼ÆËã´Ó¸ÃöùÓãÄÜ·ñÌøµ½°¶±ß 
+// è®¡ç®—ä»è¯¥é³„é±¼èƒ½å¦è·³åˆ°å²¸è¾¹ 
 bool ashore(int x, int y) 
 {
-	// ·Ö±ğ¼ÆËãµ±Ç°½áµãÓë°¶±ßµÄ¾àÀë
-	// ¼´Óë (x,50),(x,-50),(50,y),(-50,y) µÄ¾àÀë  
+	// åˆ†åˆ«è®¡ç®—å½“å‰ç»“ç‚¹ä¸å²¸è¾¹çš„è·ç¦»
+	// å³ä¸ (x,50),(x,-50),(50,y),(-50,y) çš„è·ç¦»  
 	if (abs(x - 50) <= D || abs(x + 50) <= D || abs(y + 50) <= D || abs(y - 50) <= D)
 		return true;
 	return false;
 }
 
-// È·ÈÏÊÇ·ñÄÜÉÏ°¶ 
+// ç¡®è®¤æ˜¯å¦èƒ½ä¸Šå²¸ 
 void getSafe() 
 {
 	for (int i = 0; i < N; i++) 
 	{
-		// Èç¹û¸ÃöùÓãÎ»ÖÃºÍ"°¶±ß"ÏàÁÚ 
+		// å¦‚æœè¯¥é³„é±¼ä½ç½®å’Œ"å²¸è¾¹"ç›¸é‚» 
 		if (ashore((G[i].hor), (G[i].ver)))
-			G[i].safe = true; // ½«Çé¿öÖÃÎª true
+			G[i].safe = true; // å°†æƒ…å†µç½®ä¸º true
 		else
 			G[i].safe = false;
 	}
 }
 
-// È·ÈÏÄÄĞ©öùÓãÊÇ¿ÉÒÔµÚÒ»²½ÌøÉÏÈ¥µÄ 
+// ç¡®è®¤å“ªäº›é³„é±¼æ˜¯å¯ä»¥ç¬¬ä¸€æ­¥è·³ä¸Šå»çš„ 
 void getJump() 
 {
 	for (int i = 0; i < N; i++) 
 	{
-		// Èç¹û¸ÃöùÓãÎ»ÖÃºÍ"ºşÖĞĞÄ"ÏàÁÚ£¨ÌøÔ¾¾àÀë+°ë¾¶£© 
+		// å¦‚æœè¯¥é³„é±¼ä½ç½®å’Œ"æ¹–ä¸­å¿ƒ"ç›¸é‚»ï¼ˆè·³è·ƒè·ç¦»+åŠå¾„ï¼‰ 
 		if (getLen(G[i].hor, G[i].ver, 0, 0) <= D + diameter / 2)
 			G[i].jump = true;
 		else
@@ -57,7 +57,7 @@ void getJump()
 	}
 }
 
-// ³õÊ¼»¯ 
+// åˆå§‹åŒ– 
 void Init() 
 {
 	cin >> N >> D;
@@ -84,7 +84,7 @@ void DFS(int v)
 	G[v].visit = true;
 	for (int i = 0; i < N; i++)
 	{
-		// ¾àÀëÈç¹ûĞ¡ÓÚ D£¬ÇÒÎ´Ìø¹ı£¬ÔòÄÜÌø
+		// è·ç¦»å¦‚æœå°äº Dï¼Œä¸”æœªè·³è¿‡ï¼Œåˆ™èƒ½è·³
 		if (getLen(G[v].hor, G[v].ver, G[i].hor, G[i].ver) <= D && !G[i].visit)
 			DFS(i);
 	}
@@ -95,13 +95,13 @@ void DFS(int v)
 //	queue<Node> q;
 //	Node tmp;
 //	G[v].visit = true;
-//	// µÚÒ»Ö»öùÓãÈë¶Ó 
+//	// ç¬¬ä¸€åªé³„é±¼å…¥é˜Ÿ 
 //	q.push(G[v]);
 //	while (!q.empty()) 
 //	{
 //		tmp = q.front();
 //		q.pop();
-//		// ÄÜÉÏ°¶ 
+//		// èƒ½ä¸Šå²¸ 
 //		if (tmp.safe) 
 //		{
 //			isSafe = true;
@@ -109,7 +109,7 @@ void DFS(int v)
 //		}
 //		for (int i = 0; i < N; i++) 
 //		{
-//			// ¾àÀëÈç¹ûĞ¡ÓÚ D£¬ÇÒÎ´Ìø¹ı£¬ÔòÄÜÌø
+//			// è·ç¦»å¦‚æœå°äº Dï¼Œä¸”æœªè·³è¿‡ï¼Œåˆ™èƒ½è·³
 //			if (getLen(tmp.hor, tmp.ver, G[i].hor, G[i].ver) <= D && !G[i].visit) 
 //			{
 //				G[i].visit = true;
@@ -119,7 +119,7 @@ void DFS(int v)
 //	}
 //}
 
-// ±éÀúËùÓĞµÚÒ»²½ÄÜÌøµ½µÄöùÓã 
+// éå†æ‰€æœ‰ç¬¬ä¸€æ­¥èƒ½è·³åˆ°çš„é³„é±¼ 
 void ListCompoents() 
 {
 	for (int i = 0; i < N; i++)
